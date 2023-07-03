@@ -1,24 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import classes from './SignUp.module.css'
 import googleLogo from '../../assets/googleLogo.png'
 import { Link } from 'react-router-dom'
 import { loginUser } from '../../store/auth-actions'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 const SignUp = () => {
   const dispatch = useDispatch()
+  const history = useHistory()
   const auth = useSelector((state) => state.auth)
-  const [email, setEmail] = useState(auth.email)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPass, setConfirmPass] = useState('')
   const [isUser, setIsUser] = useState(true)
 
-  const submitHandler = async (e) => {
+  useEffect(() => {
+    if (auth.isLoggedIn) {
+      history.replace('/welcome')
+    }
+  }, [auth, history])
+
+  const submitHandler = (e) => {
     e.preventDefault()
     if (email && password && (confirmPass || isUser)) {
       if (password === confirmPass || isUser) {
         console.log(email, password, confirmPass)
         dispatch(loginUser({ email: email, password: password }, isUser))
+
+        setEmail('')
+        setPassword('')
+        setConfirmPass('')
       } else {
         setConfirmPass('')
         alert('Please Re-enter Correct Confirm Password')
