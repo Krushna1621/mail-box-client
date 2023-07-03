@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import classes from './SignUp.module.css'
-import googleLogo from '../assets/googleLogo.png'
+import googleLogo from '../../assets/googleLogo.png'
 import { Link } from 'react-router-dom'
-import { loginUser } from '../store/auth-actions'
+import { loginUser } from '../../store/auth-actions'
 import { useDispatch, useSelector } from 'react-redux'
 
 const SignUp = () => {
