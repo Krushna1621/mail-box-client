@@ -23,11 +23,15 @@ const EmailList = ({ item }) => {
   let shortContent = ''
   if (item.subject.length > 25) {
     shortSubject = item.subject.slice(0, 25)
+    
   }
   if (item.content.length > 25) {
     shortContent = item.content.slice(0, 30)
+    
   }
 
+  if(auth.email===item["from"]  || auth.email===item["to"])
+  {
   return (
     <div className={classes.emailList}>
       <li className={classes.li1}>
@@ -61,5 +65,5 @@ const EmailList = ({ item }) => {
     </div>
   )
 }
-
+}
 export default EmailList

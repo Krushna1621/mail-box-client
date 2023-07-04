@@ -8,6 +8,7 @@ import { authActions } from './store/authSlice'
 import EmailBox from './pages/EmailBox/EmailBox'
 import { fetchMyEmailData } from './store/email-actions'
 import MailPage from './pages/MailPage'
+import ForgotPassword from './pages/SignUP/ForgotPassword'
 import './App.css'
 import { useHistory } from 'react-router-dom'
 
@@ -58,6 +59,9 @@ function App() {
       <Route path='/email'>
         {isAuth.isLoggedIn && <EmailBox />}
         {!isAuth.isLoggedIn && <Redirect to='/login' />}
+      </Route>
+      <Route path='/forgot-password'>
+        <ForgotPassword/>
       </Route>
       <Route path='/editor'>
         {isAuth.isLoggedIn && <EditorComp />}
