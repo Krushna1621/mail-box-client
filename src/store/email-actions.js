@@ -11,57 +11,54 @@ export const fetchMyEmailData = (myEmail) => {
     // console.log(editedMail)
     try {
       const resp = await axios.get(
-        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails.json`
+        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}.json`
+        
       )
       // console.log(resp)
       if (resp.status === 200) {
         // console.log(resp)
         const data = resp.data
 
-        // console.log(data)
-        const sentMail = []
-        const receivedMail = []
+        const sentMailTmp = data.sent
+        // console.log(sentMailTmp)
+        const receivedMailTmp = data.inbox
+        // console.log(receivedMailTmp)
         let tmp
-        for (const key in data) {
-          //   console.log(key)
-          for (const mailKey in data[key]) {
-            // console.log(mailKey)
-            const body = data[key][mailKey]
-            // console.log(body)
-            // const parsedData = JSON.parse(body)
-            // console.log(parsedData)
-            if (key === editedMail) {
-              tmp = body.from
-              receivedMail.unshift({
-                id: mailKey,
-                from: body.from,
-                to: body.to,
-                date: body.date,
-                subject: body.subject,
-                content: body.content,
-                isRead: body.isRead,
-              })
-            }
-            // console.log(body.from)
-            if (body.from === myEmail) {
-              sentMail.unshift({
-                id: mailKey,
-                from: body.from,
-                to: body.to,
-                date: body.date,
-                subject: body.subject,
-                content: body.content,
-                isRead: body.isRead,
-              })
-            }
-          }
+        let sentMail = []
+        let receivedMail = []
+
+        for (let key in sentMailTmp) {
+          let body = sentMailTmp[key]
+          // console.log(body)
+          sentMail.unshift({
+            id: key,
+            from: body.from,
+            to: body.to,
+            date: body.date,
+            subject: body.subject,
+            content: body.content,
+            isRead: body.isRead,
+          })
+        }
+
+        for (let key in receivedMailTmp) {
+          let body = receivedMailTmp[key]
+          // console.log(body)
+          receivedMail.unshift({
+            id: key,
+            from: body.from,
+            to: body.to,
+            date: body.date,
+            subject: body.subject,
+            content: body.content,
+            isRead: body.isRead,
+          })
         }
         // console.log('receivedMail')
         // console.log(receivedMail)
         // console.log('sentMail')
         // console.log(sentMail)
         dispatch(emailActions.updateEmailData({ receivedMail, sentMail }))
-        // dispatch(fetchEmailData())
       } else {
         let errorMessage = 'Sending mail failed'
         const data = await resp.json()
@@ -70,7 +67,7 @@ export const fetchMyEmailData = (myEmail) => {
         throw new Error(errorMessage)
       }
     } catch (error) {
-      window.alert(error.message)
+      // window.alert(error.message)
       console.log(error.message)
     }
   }
@@ -86,11 +83,21 @@ export const addEmailData = (email, emailBody) => {
 
     try {
       const resp = await axios.post(
-        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}.json`,
+        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}/inbox.json`,
         emailBody
       )
       //   console.log(resp)
       if (resp.status === 200) {
+        let tmp1 = emailBody.from.split('@')[0]
+        let tmp2 = emailBody.from.split('@')[1]
+        let tmp3 = tmp2.split('.')[0]
+        let tmp4 = tmp2.split('.')[1]
+        let sentEditedMail = tmp1 + tmp3 + tmp4
+
+        const resp = await axios.post(
+          `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${sentEditedMail}/sent.json`,
+          emailBody
+        )
         // console.log(resp)
         dispatch(fetchMyEmailData(emailBody.from))
         dispatch(emailActions.stopEditing())
@@ -109,25 +116,28 @@ export const addEmailData = (email, emailBody) => {
 }
 
 export const deleteEmailData = (email, type, id) => {
-  // if (type === 'Inbox')
   return async (dispatch) => {
-    console.log(email, type, id)
+    let deleteKey
+    if (type === 'inbox') {
+      deleteKey = 'inbox'
+    } else if (type === 'sent') {
+      deleteKey = 'sent'
+    }
     let tmp1 = email.split('@')[0]
     let tmp2 = email.split('@')[1]
     let tmp3 = tmp2.split('.')[0]
     let tmp4 = tmp2.split('.')[1]
     let editedMail = tmp1 + tmp3 + tmp4
-    // console.log(
-    //   `https://mail-box-client-ea769-default-rtdb.firebaseio.com/${editedMail}/${id}.json`
-    // )
+
+    // console.log(editedMail, deleteKey, id)
     try {
       const resp = await axios.delete(
-        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}/${id}.json`
-      
+        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}/${deleteKey}/${id}.json`
+        
       )
       //   console.log(resp)
       if (resp.status === 200) {
-        // console.log(resp)
+        console.log(resp)
         dispatch(fetchMyEmailData(email))
       } else {
         let errorMessage = 'Deleting mail failed'
@@ -153,7 +163,7 @@ export const updateEmailData = (emailBody, id) => {
 
     try {
       const resp = await axios.put(
-        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails/${editedMail}/${id}.json`,
+        `https://react-mail-box-client-http-default-rtdb.firebaseio.com/mails//${editedMail}/inbox/${id}.json`,
         emailBody
       )
       //   console.log(resp)
