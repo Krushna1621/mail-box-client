@@ -29,7 +29,7 @@ const EmailList = ({ item }) => {
     shortContent = item.content.slice(0, 30)
     
   }
-
+  
   if(auth.email===item["from"]  || auth.email===item["to"])
   {
   return (
@@ -66,4 +66,4 @@ const EmailList = ({ item }) => {
   )
 }
 }
-export default EmailList
+export default EmailList;
