@@ -33,16 +33,17 @@ function App() {
 
   return (
     <div>
-      <button
-        className='logout'
-        onClick={() => {
-          localStorage.clear()
-          history.replace('/')
-          dispatch(authActions.logout())
-        }}
-      >
-        Logout
-      </button>
+    {isAuth.isLoggedIn&&
+     <button
+     className='logout'
+     onClick={() => {
+       localStorage.clear()
+       history.replace('/')
+       dispatch(authActions.logout())
+     }}
+   >
+     Logout
+   </button>} 
       <Route path='/' exact>
         <Redirect to='/welcome' />
       </Route>
